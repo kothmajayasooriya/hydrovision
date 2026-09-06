@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Database (auto-created by app.py on first run)
+instance/
+
+# Uploaded evidence photos (auto-created at runtime)
+static/uploads/

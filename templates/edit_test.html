@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Edit Test - HydroVision{% endblock %}
+
+{% block content %}
+  <h1 class="section-title" style="justify-content:center;">✏️ Edit Water Test</h1>
+  <p class="section-sub" style="text-align:center;">
+    Update the readings below — HydroVision will recalculate the Water Quality Index automatically.
+    Only you can see this page, because only you submitted this test.
+  </p>
+
+  <form method="POST" enctype="multipart/form-data" class="panel">
+    <label for="location_name">Location Name</label>
+    <div class="autocomplete-wrapper">
+      <input type="text" id="location_name" name="location_name" value="{{ test.location_name }}" required
+             autocomplete="off" data-autocomplete="location"
+             data-lat-field="latitude" data-lng-field="longitude">
+    </div>
+
+    <label for="source_type">Water Source Type</label>
+    <select id="source_type" name="source_type" required>
+      {% for opt in ["Well", "Tap", "River", "Lake", "Rainwater"] %}
+        <option value="{{ opt }}" {% if test.source_type == opt %}selected{% endif %}>
+          {{ {"Well":"Well","Tap":"Tap / Municipal supply","River":"River / Stream","Lake":"Lake / Reservoir","Rainwater":"Rainwater tank"}[opt] }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <label for="ph">pH level (0-14) — <a href="{{ url_for('learn') }}#ph">what's safe?</a></label>
+    <input type="number" id="ph" name="ph" step="0.001" min="0" max="14" value="{{ test.ph }}" required>
+
+    <label for="turbidity">Turbidity (NTU) — <a href="{{ url_for('learn') }}#turbidity">learn more</a></label>
+    <input type="number" id="turbidity" name="turbidity" step="0.001" min="0" value="{{ test.turbidity }}" required>
+
+    <label for="tds">Total Dissolved Solids (mg/L) — <a href="{{ url_for('learn') }}#tds">learn more</a></label>
+    <input type="number" id="tds" name="tds" step="0.001" min="0" value="{{ test.tds }}" required>
+
+    <label for="nitrates">Nitrates (mg/L) — <a href="{{ url_for('learn') }}#nitrates">learn more</a></label>
+    <input type="number" id="nitrates" name="nitrates" step="0.001" min="0" value="{{ test.nitrates }}" required>
+
+    <label for="latitude">Latitude (optional)</label>
+    <input type="number" id="latitude" name="latitude" step="0.000001" value="{{ test.latitude if test.latitude is not none else '' }}">
+
+    <label for="longitude">Longitude (optional)</label>
+    <input type="number" id="longitude" name="longitude" step="0.000001" value="{{ test.longitude if test.longitude is not none else '' }}">
+
+    {% if test.photo_filename %}
+      <label>Current Evidence Photo</label>
+      <img src="{{ url_for('static', filename='uploads/' ~ test.photo_filename) }}"
+           alt="Current evidence photo" style="width:100%; border-radius:10px; max-height:150px; object-fit:cover; margin-bottom:0.5rem;">
+    {% endif %}
+    <label for="photo">Replace Evidence Photo (optional — leave blank to keep the current one)</label>
+    <input type="file" id="photo" name="photo" accept="image/*" capture="environment">
+
+    <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1.5rem;">Save Changes &amp; Recalculate WQI</button>
+  </form>
+  <form method="POST" action="{{ url_for('delete_test', test_id=test.id) }}" class="panel"
+        style="margin-top:1.5rem; border: 2px solid #FFB4A2; text-align:center;"
+        onsubmit="return confirm('Delete this water test at {{ test.location_name|e }}? This cannot be undone.');">
+    <p style="margin:0 0 0.75rem; color:#8a2c1c; font-weight:600;">Danger zone — this permanently removes this test.</p>
+    <button type="submit" class="btn" style="background:#FFB4A2; color:#8a2c1c; width:100%;">🗑️ Delete This Water Test</button>
+  </form>
+
+  <p style="text-align:center; margin-top:1rem;">
+    <a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+  </p>
+{% endblock %}

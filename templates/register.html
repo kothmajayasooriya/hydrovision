@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Register - HydroVision{% endblock %}
+
+{% block content %}
+  <div style="text-align:center; margin-bottom:1rem;">
+    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="HydroVision logo" style="width:72px; height:72px; border-radius:50%; box-shadow:var(--shadow);">
+  </div>
+  <h1 style="text-align:center; color: var(--dark-blue);">Create Your Account</h1>
+  <form method="POST" class="panel">
+    <label for="name">Full Name</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required minlength="6">
+
+    <label for="role">I am a...</label>
+    <select id="role" name="role">
+      <option value="citizen">Citizen / Community Member</option>
+      <option value="technician">Lab Technician</option>
+    </select>
+
+    <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1.5rem;">Create Account</button>
+  </form>
+  <p style="text-align:center; margin-top:1rem;">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+{% endblock %}

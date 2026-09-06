@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}Learn - HydroVision{% endblock %}
+
+{% block content %}
+  <h1 class="section-title">📚 Understanding Your Water Quality Index</h1>
+  <p class="section-sub">
+    Every test you log on HydroVision is scored against four measurable parameters, each compared to a
+    WHO-based safe limit. This page explains what each one means, why it matters, and how it feeds into
+    your WQI score - so a number on the dashboard always has a story behind it.
+  </p>
+
+  <!-- Internal quick-navigation: clicking a link jumps straight to the relevant section -->
+  <nav class="learn-nav" aria-label="Jump to a water quality topic">
+    <a href="#ph">⚗️ pH Level</a>
+    <a href="#turbidity">🌫️ Turbidity</a>
+    <a href="#tds">🧂 Total Dissolved Solids</a>
+    <a href="#nitrates">🌾 Nitrates</a>
+    <a href="#wqi">🧮 How WQI Is Calculated</a>
+  </nav>
+
+  <section id="ph" class="fact-panel">
+    <h2>⚗️ pH Level</h2>
+    <span class="limit-tag">Safe range: 6.5 – 8.5 &nbsp;|&nbsp; Ideal: 7.0</span>
+    <p>
+      pH measures how acidic or alkaline water is, on a scale of 0 (very acidic) to 14 (very alkaline).
+      Pure water sits close to neutral at 7. When pH drifts too far in either direction, water becomes
+      corrosive - it can leach metals like lead or copper out of old pipes, irritate skin and eyes, and
+      make disinfection with chlorine far less effective.
+    </p>
+    <div class="fact-grid">
+      <div class="mini-card">
+        <h4>Too acidic (&lt; 6.5)</h4>
+        <p>Often linked to acid rain, mine drainage, or peaty soils. Can cause a metallic taste and pipe corrosion.</p>
+      </div>
+      <div class="mini-card">
+        <h4>Too alkaline (&gt; 8.5)</h4>
+        <p>Common near limestone-rich ground or after certain agricultural runoff. Can leave scale build-up and a soapy taste.</p>
+      </div>
+      <div class="mini-card">
+        <h4>How HydroVision scores it</h4>
+        <p>Because 7.0 is ideal, we measure how far a reading strays from neutral - not just whether it's "low" or "high".</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="turbidity" class="fact-panel">
+    <h2>🌫️ Turbidity</h2>
+    <span class="limit-tag">Safe limit: below 5 NTU</span>
+    <p>
+      Turbidity is the cloudiness of water caused by suspended particles - silt, clay, algae, or organic
+      matter. It's measured in Nephelometric Turbidity Units (NTU). Cloudy water isn't automatically
+      dangerous, but high turbidity is a strong warning sign: it can shield harmful microorganisms from
+      disinfection and often points to recent contamination such as runoff after heavy rain.
+    </p>
+    <div class="fact-grid">
+      <div class="mini-card">
+        <h4>Where it comes from</h4>
+        <p>Soil erosion, construction runoff, algal blooms, and disturbed sediment in rivers or wells.</p>
+      </div>
+      <div class="mini-card">
+        <h4>Why it matters</h4>
+        <p>Particles can carry bacteria and viruses, reducing the effectiveness of chlorination.</p>
+      </div>
+      <div class="mini-card">
+        <h4>Quick field check</h4>
+        <p>If you can't see a coin at the bottom of a clear glass of the water, turbidity is likely elevated.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="tds" class="fact-panel">
+    <h2>🧂 Total Dissolved Solids (TDS)</h2>
+    <span class="limit-tag">Safe limit: below 500 mg/L</span>
+    <p>
+      TDS measures the combined amount of minerals, salts, and metals dissolved in water - things like
+      calcium, magnesium, sodium, and sulphates. A moderate amount is normal and even gives water its
+      taste. But when TDS climbs too high, it can indicate industrial discharge, saltwater intrusion, or
+      excessive fertiliser and road-salt runoff reaching the source.
+    </p>
+    <div class="fact-grid">
+      <div class="mini-card">
+        <h4>Low TDS</h4>
+        <p>Often tastes flat; can also mean over-purified water lacking beneficial minerals.</p>
+      </div>
+      <div class="mini-card">
+        <h4>High TDS</h4>
+        <p>Can cause a salty, bitter, or metallic taste and, over time, contribute to scale in appliances and pipes.</p>
+      </div>
+      <div class="mini-card">
+        <h4>Common sources</h4>
+        <p>Agricultural runoff, wastewater discharge, natural mineral deposits, and road salt in colder regions.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="nitrates" class="fact-panel">
+    <h2>🌾 Nitrates</h2>
+    <span class="limit-tag">Safe limit: below 45 mg/L</span>
+    <p>
+      Nitrates are a form of nitrogen most commonly linked to agricultural fertiliser, livestock waste, and
+      septic system runoff seeping into groundwater. Unlike turbidity, elevated nitrates usually can't be
+      seen, smelled, or tasted - which is exactly why community testing matters. High nitrate levels are
+      especially dangerous for infants, where they can interfere with the blood's ability to carry oxygen.
+    </p>
+    <div class="fact-grid">
+      <div class="mini-card">
+        <h4>Main sources</h4>
+        <p>Fertiliser runoff, animal waste, and leaking septic tanks - especially in farming areas.</p>
+      </div>
+      <div class="mini-card">
+        <h4>Health risk</h4>
+        <p>Highest concern for infants under six months and pregnant people; long-term exposure is also studied for other effects.</p>
+      </div>
+      <div class="mini-card">
+        <h4>Why test regularly</h4>
+        <p>Nitrate levels can rise seasonally after fertiliser application or heavy rain, so one clean reading doesn't guarantee lasting safety.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="wqi" class="fact-panel" style="border-left-color: var(--gold);">
+    <h2>🧮 How Your WQI Score Is Calculated</h2>
+    <p>
+      HydroVision uses the <strong>Weighted Arithmetic Water Quality Index</strong> method. Each of the four
+      parameters above is compared against its WHO-based permissible limit and given a "quality rating."
+      Parameters closer to their unsafe limit contribute more heavily to the final score. pH is treated
+      specially, since it's measured as distance from the ideal value (7.0) rather than a simple ratio.
+    </p>
+    <div class="fact-grid">
+      <div class="mini-card"><h4>0 – 25</h4><p>Excellent</p></div>
+      <div class="mini-card"><h4>26 – 50</h4><p>Good</p></div>
+      <div class="mini-card"><h4>51 – 75</h4><p>Poor</p></div>
+      <div class="mini-card"><h4>76 – 100</h4><p>Very Poor</p></div>
+      <div class="mini-card"><h4>100+</h4><p>Unsuitable</p></div>
+    </div>
+    <p style="margin-top:1rem;">
+      Ready to see how your local water measures up?
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('submit_test') }}" class="btn btn-primary btn-small">Log a Test</a>
+      {% else %}
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-small">Create a Free Account</a>
+      {% endif %}
+    </p>
+  </section>
+{% endblock %}

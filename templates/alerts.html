@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Alerts - HydroVision{% endblock %}
+
+{% block content %}
+  <h1 class="section-title">⚠️ Contamination Alerts</h1>
+  <p class="section-sub">Submissions from the last 14 days classified as Poor or worse. Not sure why a reading is flagged? Check the <a href="{{ url_for('learn') }}">Learn hub</a>.</p>
+
+  <div class="card-grid">
+    {% for test in hazardous %}
+      <div class="card" style="border-top-color:#FFB4A2;">
+        <div class="card-icon" style="border-color:#FFB4A2;">🚨</div>
+        <h3>{{ test.location_name }}</h3>
+        <span class="badge badge-{{ test.status.replace(' ', '-') }}">{{ test.status }}</span>
+        <p style="margin-top:0.75rem;">WQI: <strong>{{ test.wqi_score }}</strong> — logged {{ test.created_at.strftime('%d %b %Y') }}</p>
+      </div>
+    {% else %}
+      <p>No active alerts — all recent readings are within safe limits. 🎉</p>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}HydroVision{% endblock %}</title>
+
+  <!-- Favicon: uses the same logo across every page -->
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/logo.svg') }}">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/logo.png') }}">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body id="top">
+
+  <header>
+    <a href="{{ url_for('index') }}" class="brand">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="HydroVision logo - a water droplet with an eye at its centre">
+      <span>
+        HydroVision
+        <span class="brand-sub">Water Quality &amp; Contamination Index</span>
+      </span>
+    </a>
+    <nav>
+      <a href="{{ url_for('index') }}" {% if request.endpoint=='index' %}class="active"{% endif %}>Home</a>
+      <a href="{{ url_for('learn') }}" {% if request.endpoint=='learn' %}class="active"{% endif %}>Learn</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}" {% if request.endpoint=='dashboard' %}class="active"{% endif %}>Dashboard</a>
+        <a href="{{ url_for('submit_test') }}" {% if request.endpoint=='submit_test' %}class="active"{% endif %}>Log a Test</a>
+        <a href="{{ url_for('alerts') }}" {% if request.endpoint=='alerts' %}class="active"{% endif %}>Alerts</a>
+        <a href="{{ url_for('logout') }}">Logout ({{ current_user.name }})</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" {% if request.endpoint=='login' %}class="active"{% endif %}>Login</a>
+        <a href="{{ url_for('register') }}" {% if request.endpoint=='register' %}class="active"{% endif %}>Register</a>
+      {% endif %}
+
+      <!-- Global quick-search: submits to the Dashboard's search/filter backend -->
+      <form class="nav-search autocomplete-wrapper" action="{{ url_for('dashboard') }}" method="GET" role="search" autocomplete="off">
+        <input type="text" name="search" placeholder="Search a location…" aria-label="Search water tests by location" data-autocomplete="location">
+        <button type="submit" aria-label="Search">🔍</button>
+      </form>
+    </nav>
+  </header>
+
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <a href="#top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</a>
+
+  <footer id="footer">
+    <div class="footer-grid">
+      <div>
+        <h4>HydroVision</h4>
+        <ul>
+          <li>Crowdsourced water quality monitoring, built for SDG 6: Clean Water &amp; Sanitation.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="{{ url_for('index') }}">Home</a></li>
+          <li><a href="{{ url_for('learn') }}">Learn: Water Quality Facts</a></li>
+          <li><a href="{{ url_for('alerts') }}">Contamination Alerts</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Account</h4>
+        <ul>
+          {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('submit_test') }}">Log a Water Test</a></li>
+          {% else %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('register') }}">Register</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; HydroVision — A crowdsourced water quality index, built for SDG 6: Clean Water &amp; Sanitation.
+      <div class="credit">
+        Project by <strong>Kothma Jayasooriya</strong>
+      </div>
+    </div>
+  </footer>
+
+  <!--
+    Location autocomplete: any input marked data-autocomplete="location"
+    gets a live "type-ahead" dropdown of real place names worldwide,
+    powered by OpenStreetMap's free Nominatim search API (no API key
+    needed). This only ever suggests place names -so it's applied to 
+    location fields only (header search, "Log a Test").
+    If the input also carries data-lat-field / data-lng-field, picking a
+    suggestion auto-fills those coordinate fields too.
+  -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var fields = document.querySelectorAll('[data-autocomplete="location"]');
+
+    fields.forEach(function (input) {
+      var wrapper = input.closest('.autocomplete-wrapper');
+      if (!wrapper) return; // safety: needs a positioned wrapper to anchor the dropdown
+
+      var list = document.createElement('div');
+      list.className = 'autocomplete-list';
+      wrapper.appendChild(list);
+
+      var debounceId = null;
+
+      function hideList() {
+        list.style.display = 'none';
+        list.innerHTML = '';
+      }
+
+      input.addEventListener('input', function () {
+        clearTimeout(debounceId);
+        var query = input.value.trim();
+        hideList();
+        if (query.length < 3) return;
+
+        debounceId = setTimeout(function () {
+          fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=0&limit=7&q=' + encodeURIComponent(query))
+            .then(function (res) { return res.json(); })
+            .then(function (results) {
+              hideList();
+              if (!results || !results.length) return;
+
+              results.forEach(function (place) {
+                var item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.textContent = place.display_name;
+                item.addEventListener('click', function () {
+                  input.value = place.display_name;
+                  hideList();
+
+                  var latFieldId = input.getAttribute('data-lat-field');
+                  var lngFieldId = input.getAttribute('data-lng-field');
+                  if (latFieldId) {
+                    var latEl = document.getElementById(latFieldId);
+                    if (latEl) latEl.value = parseFloat(place.lat).toFixed(6);
+                  }
+                  if (lngFieldId) {
+                    var lngEl = document.getElementById(lngFieldId);
+                    if (lngEl) lngEl.value = parseFloat(place.lon).toFixed(6);
+                  }
+                });
+                list.appendChild(item);
+              });
+
+              list.style.display = 'block';
+            })
+            .catch(hideList);
+        }, 350);
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!wrapper.contains(e.target)) hideList();
+      });
+    });
+  });
+  </script>
+
+</body>
+</html>

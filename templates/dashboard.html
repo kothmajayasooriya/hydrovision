@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - HydroVision{% endblock %}
+
+{% block content %}
+  <h1 class="section-title">📊 Water Safety Dashboard</h1>
+  <p class="section-sub">Search by location or filter by safety status - every card here is a real, community-logged reading.</p>
+
+  <form method="GET" class="toolbar">
+    <input type="text" name="search" placeholder="🔍 Search by location..." value="{{ search }}">
+    <select name="status">
+      <option value="">All statuses</option>
+      {% for s in ["Excellent", "Good", "Poor", "Very Poor", "Unsuitable"] %}
+        <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">Search / Filter</button>
+    {% if search or status_filter %}
+      <a href="{{ url_for('dashboard') }}" class="btn btn-outline">Clear</a>
+    {% endif %}
+  </form>
+
+  <div class="card-grid">
+    {% for test in tests %}
+      <div class="card">
+        {% if test.photo_filename %}
+          <img src="{{ url_for('static', filename='uploads/' ~ test.photo_filename) }}"
+               alt="Evidence photo submitted for the water test at {{ test.location_name }}"
+               style="width:100%; border-radius:10px; margin-bottom:0.75rem; max-height:150px; object-fit:cover;">
+        {% else %}
+          <div class="card-icon">💧</div>
+        {% endif %}
+        <h3>{{ test.location_name }}</h3>
+        <p style="color:#607d8b; margin: 0 0 0.5rem;">{{ test.source_type }} • {{ test.created_at.strftime('%d %b %Y') }}</p>
+        <span class="badge badge-{{ test.status.replace(' ', '-') }}">{{ test.status }}</span>
+        <p style="margin-top:0.75rem;">
+          WQI: <strong>{{ test.wqi_score }}</strong><br>
+          pH {{ test.ph }} · Turbidity {{ test.turbidity }} NTU · TDS {{ test.tds }} mg/L · Nitrates {{ test.nitrates }} mg/L
+        </p>
+        <p style="font-size:0.85rem; color:#90a4ae;">Logged by {{ test.submitted_by.name }}</p>
+        {% if test.user_id == current_user.id %}
+          <div style="margin-top:0.5rem; display:flex; gap:0.5rem;">
+            <a href="{{ url_for('edit_test', test_id=test.id) }}" class="btn btn-small btn-outline">✏️ Edit</a>
+            <form method="POST" action="{{ url_for('delete_test', test_id=test.id) }}"
+                  onsubmit="return confirm('Delete this water test at {{ test.location_name|e }}? This cannot be undone.');">
+              <button type="submit" class="btn btn-small btn-outline" style="border-color:#FFB4A2; color:#8a2c1c;">🗑️ Delete</button>
+            </form>
+          </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <p>No results match your search — try a different location or clear the filter.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}HydroVision - Home{% endblock %}
+
+{% block content %}
+  <section class="hero">
+    <h1>💧 Know your water. Protect your community.</h1>
+    <p>HydroVision lets anyone log local water metrics and instantly see a calculated Water Quality Index, turning raw readings into a real, shared safety map for SDG 6: Clean Water &amp; Sanitation.</p>
+    <div class="hero-actions">
+      {% if not current_user.is_authenticated %}
+        <a href="{{ url_for('register') }}" class="btn btn-gold">Get Started</a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline" style="border-color:white;color:white;">Log In</a>
+      {% else %}
+        <a href="{{ url_for('submit_test') }}" class="btn btn-gold">Log a Water Test</a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline" style="border-color:white;color:white;">View Dashboard</a>
+      {% endif %}
+      <a href="{{ url_for('learn') }}" class="btn btn-outline" style="border-color:white;color:white;">Learn the Science</a>
+    </div>
+  </section>
+
+  <div class="stat-strip">
+    <div class="stat">
+      <div class="num">{{ recent_tests|length }}</div>
+      <div class="label">Recent submissions shown</div>
+    </div>
+    <div class="stat">
+      <div class="num">4</div>
+      <div class="label">Parameters measured per test</div>
+    </div>
+    <div class="stat">
+      <div class="num">5</div>
+      <div class="label">Safety classifications</div>
+    </div>
+    <div class="stat">
+      <div class="num">SDG&nbsp;6</div>
+      <div class="label">Clean Water &amp; Sanitation</div>
+    </div>
+  </div>
+
+  <h2 class="section-title">📊 Recent Submissions</h2>
+  <p class="section-sub">Real, live data from the community - not placeholders.</p>
+  <div class="card-grid">
+    {% for test in recent_tests %}
+      <div class="card">
+        <div class="card-icon">💧</div>
+        <h3>{{ test.location_name }}</h3>
+        <p style="color:#607d8b; margin: 0 0 0.5rem;">{{ test.source_type }}</p>
+        <span class="badge badge-{{ test.status.replace(' ', '-') }}">{{ test.status }}</span>
+        <p style="margin-top: 0.75rem;">WQI Score: <strong>{{ test.wqi_score }}</strong></p>
+      </div>
+    {% else %}
+      <p>No submissions yet — be the first to log a water test.</p>
+    {% endfor %}
+  </div>
+
+  <h2 class="section-title" style="margin-top:2.5rem;">🔬 What Affects Your Water?</h2>
+  <p class="section-sub">Every reading you log is checked against WHO-based safe limits. Tap a card to learn why each one matters.</p>
+  <div class="card-grid">
+    <a href="{{ url_for('learn') }}#ph" class="card" style="text-decoration:none;color:inherit;">
+      <div class="card-icon">⚗️</div>
+      <h3>pH Level</h3>
+      <p style="color:#607d8b;">Safe range: 6.5 – 8.5. Too acidic or alkaline water can corrode pipes and harm health.</p>
+      <span class="btn btn-small btn-outline">Read more →</span>
+    </a>
+    <a href="{{ url_for('learn') }}#turbidity" class="card" style="text-decoration:none;color:inherit;">
+      <div class="card-icon">🌫️</div>
+      <h3>Turbidity</h3>
+      <p style="color:#607d8b;">Cloudiness caused by suspended particles, a warning sign of contamination.</p>
+      <span class="btn btn-small btn-outline">Read more →</span>
+    </a>
+    <a href="{{ url_for('learn') }}#tds" class="card" style="text-decoration:none;color:inherit;">
+      <div class="card-icon">🧂</div>
+      <h3>Total Dissolved Solids</h3>
+      <p style="color:#607d8b;">Minerals and salts dissolved in water — high TDS affects taste and safety.</p>
+      <span class="btn btn-small btn-outline">Read more →</span>
+    </a>
+    <a href="{{ url_for('learn') }}#nitrates" class="card" style="text-decoration:none;color:inherit;">
+      <div class="card-icon">🌾</div>
+      <h3>Nitrates</h3>
+      <p style="color:#607d8b;">Often from fertiliser runoff - dangerous at high concentrations, especially for infants.</p>
+      <span class="btn btn-small btn-outline">Read more →</span>
+    </a>
+  </div>
+{% endblock %}
